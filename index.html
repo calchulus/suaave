@@ -956,8 +956,8 @@ type: "function"
         <div id="swapresults" class="card" hidden>
         Borrow <span id="lend_output" hidden></span> more <span id="borrow_asset"></span>
         Lend <span id="deposit_output" hidden></span> more <span id="relend_asset"></span>
-            
-        
+        <br>    
+        Earn <span id="interest"></span>% Effective Interest!
         </div>
 <!--        <button>Connect Metamask</button>-->
 
@@ -1073,17 +1073,28 @@ console.log(atokenslist);
                   borrowpower += info_list[i]["currentUnderlyingBalance"] * info_list[i]["priceInEth"] * info_list[i]["baseLTVasCollateral"] ;
                     console.log("dog");
                     console.log(i, borrowpower);
-                    
-                }
                 console.log(borrowpower.toFixed(8));
                 console.log(highest_lend_LTV);
                 var lent_output = (borrowpower / (1 - highest_lend_LTV)).toFixed(8);
+                var exposure =( 1 / (1 - highest_lend_LTV)).toFixed(8);
+                console.log(exposure);
+                var interest = Number(document.getElementById("interestrateswap").innerHTML) * exposure;
+                    
+                document.getElementById("interest").innerHTML = interest;
                 console.log("elmo", lent_output);
                 var max_borrow = lent_output * lowest_borrow_eth_price / highest_lend_price;
                 console.log(max_borrow);
                 console.log(lent_output);
-                
-                
+                     max_borrow.toFixed(8);
+     document.getElementById("lend_output").innerHTML = max_borrow.toFixed(8);
+                        document.getElementById("lend_output").removeAttribute('hidden');
+                        
+                        document.getElementById("deposit_output").innerHTML = lent_output;
+                        document.getElementById("deposit_output").removeAttribute('hidden');
+             document.getElementById("swapresults").removeAttribute("hidden");
+                }
+            });
+          
                 abi = [
 {
 constant: true,
@@ -1776,7 +1787,7 @@ payable: false,
 stateMutability: "view",
 type: "function"
 }
-]
+];
                 var dagger = new Dagger("wss://mainnet.dagger.matic.network"); // dagger server
                 var web3Contract = new web3.eth.Contract(abi, "0xB36017F5aafDE1a9462959f0e53866433D373404")
                 var contract = dagger.contract(web3Contract);
@@ -1785,19 +1796,11 @@ type: "function"
   room: "latest"
 });
                 filter.watch(function(data, removed) {
-  console.log("I aave'd");
-                    
+  console.log("I aave'd");            
 });
-                max_borrow.toFixed(8);
-     document.getElementById("lend_output").innerHTML = max_borrow.toFixed(8);
-                        document.getElementById("lend_output").removeAttribute('hidden');
-                        
-                        document.getElementById("deposit_output").innerHTML = lent_output;
-                        document.getElementById("deposit_output").removeAttribute('hidden');
-             document.getElementById("swapresults").removeAttribute("hidden");
                 
-            });
-        }
+           
+                }
         </script>
         
       
