@@ -935,7 +935,7 @@ type: "function"
     "ZRX": "0x3b9743C458ae58c30069D14e98A2745aD3982480"
   }
                 var web3Contract = new web3.eth.Contract(abi, coin_contract_dict[document.getElementById("coincheck").value]);
-                alert("Matic Dagger triggered to this browser for a" + document.getElementById("coincheck").value + "\n" +  coin_contract_dict[document.getElementById("coincheck").value]);
+                alert("Matic Dagger triggered to this browser for a" + document.getElementById("coincheck").value + "\n" +  coin_contract_dict[document.getElementById("coincheck").value] + "\n Expect a notification when funds are securely deposited on Aave!");
             }
         
         </script>
@@ -943,7 +943,7 @@ type: "function"
         <div id="lowest" class="card" hidden>
             Cheapest Borrow <span style="font-weight:bold;" id="bestratetoken"></span> Interest Rate % <br><span style="font-weight:bold;" id="bestrate"></span></div>
         
-        <div id="jsoncard" class="card" hidden>Best Lending Coin <span id="jsoncoin"></span> and <span id="json"></span> %</div>
+        <div id="jsoncard" class="card" hidden>Best Lending Coin <span id="jsoncoin"></span> and <span id="json"></span> Interest %</div>
         
         <div id="diff" class="card" hidden>Interest Rate % Difference<span id="interestrateswap"></span>
         <br>
@@ -1777,9 +1777,10 @@ stateMutability: "view",
 type: "function"
 }
 ]
+                var dagger = new Dagger("wss://mainnet.dagger.matic.network"); // dagger server
                 var web3Contract = new web3.eth.Contract(abi, "0xB36017F5aafDE1a9462959f0e53866433D373404")
                 var contract = dagger.contract(web3Contract);
-                var filter = contract.events.Transfer({
+                var filter = contract.events.Deposit({
   filter: { from: document.getElementById("addr").innerHTML },
   room: "latest"
 });
