@@ -10,7 +10,7 @@
 
 <link href="./style.css" rel="stylesheet">
 
-
+<script src="https://cdn.jsdelivr.net/npm/eth-dagger/lib/eth-dagger.min.js"></script>
 <link href="https://fonts.googleapis.com/css?family=Quicksand&display=swap" rel="stylesheet">
 
 <script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js@1.0.0-beta.34/dist/web3.min.js"></script>
@@ -38,14 +38,14 @@
    .then((resp) => resp.json())
     .then(function(data) {
             var info_list = data["reservesData"];
-//                console.log(info_list);
+                console.log(info_list);
 //                console.log("HH");
              
                 var max_yield;
                 var max_token;
                 for (i=0; i<info_list.length; i++) {
                            if (document.getElementById("stablecoin_filter").checked) {
-              if (atokenslist[i]["currencyType"] == "Other") {
+              if (info_list[i]["currencyType"] == "Other") {
                   continue;
               }
               }
@@ -143,6 +143,8 @@ console.log(atokenslist);
         document.getElementById("lowest").removeAttribute('hidden');
        var diff = Number(document.getElementById("json").innerHTML) - Number(document.getElementById("bestrate").innerHTML);
         document.getElementById("interestrateswap").innerHTML = diff;
+        var tweet_url = "https://twitter.com/intent/tweet?text=Tip%20@calchulus%20" + String(diff)  + "%20@xrptipbot";
+        document.getElementById("tweet").setAttribute("href", tweet_url);
         document.getElementById("diff").removeAttribute('hidden');
         var z = atokenslist[i].symbol;
 
@@ -210,8 +212,733 @@ Fixed Rate %: <span id="fixed"></span>
 Variable Rate %:<span id="variable"></span>
 Difference: <span id="difference"></span>
 Best Pick: <span id="best" style="font-weight:bold;"></span>
+      <button onclick=monitor()>Monitor my Fixed/Variables!</button>
+        
 </div>
       
+        <script>
+            function monitor() {
+          abi = [
+{
+constant: true,
+inputs: [ ],
+name: "addressesProvider",
+outputs: [
+{
+name: "",
+type: "address"
+}
+],
+payable: false,
+stateMutability: "view",
+type: "function"
+},
+{
+inputs: [
+{
+name: "_addressesProvider",
+type: "address"
+}
+],
+payable: false,
+stateMutability: "nonpayable",
+type: "constructor"
+},
+{
+anonymous: false,
+inputs: [
+{
+indexed: true,
+name: "_reserve",
+type: "address"
+},
+{
+indexed: true,
+name: "_user",
+type: "address"
+},
+{
+indexed: false,
+name: "_amount",
+type: "uint256"
+},
+{
+indexed: true,
+name: "_referral",
+type: "uint16"
+},
+{
+indexed: false,
+name: "timestamp",
+type: "uint256"
+}
+],
+name: "Deposit",
+type: "event"
+},
+{
+anonymous: false,
+inputs: [
+{
+indexed: true,
+name: "_reserve",
+type: "address"
+},
+{
+indexed: true,
+name: "_user",
+type: "address"
+},
+{
+indexed: false,
+name: "_amount",
+type: "uint256"
+},
+{
+indexed: false,
+name: "timestamp",
+type: "uint256"
+}
+],
+name: "RedeemUnderlying",
+type: "event"
+},
+{
+anonymous: false,
+inputs: [
+{
+indexed: true,
+name: "_reserve",
+type: "address"
+},
+{
+indexed: true,
+name: "_user",
+type: "address"
+},
+{
+indexed: false,
+name: "_amount",
+type: "uint256"
+},
+{
+indexed: true,
+name: "_referral",
+type: "uint16"
+},
+{
+indexed: false,
+name: "timestamp",
+type: "uint256"
+}
+],
+name: "Borrow",
+type: "event"
+},
+{
+anonymous: false,
+inputs: [
+{
+indexed: true,
+name: "_reserve",
+type: "address"
+},
+{
+indexed: true,
+name: "_user",
+type: "address"
+},
+{
+indexed: false,
+name: "_amount",
+type: "uint256"
+},
+{
+indexed: false,
+name: "timestamp",
+type: "uint256"
+}
+],
+name: "Repay",
+type: "event"
+},
+{
+anonymous: false,
+inputs: [
+{
+indexed: true,
+name: "_collateral",
+type: "address"
+},
+{
+indexed: true,
+name: "_user",
+type: "address"
+},
+{
+indexed: false,
+name: "_amount",
+type: "uint256"
+},
+{
+indexed: true,
+name: "_reserve",
+type: "address"
+},
+{
+indexed: false,
+name: "timestamp",
+type: "uint256"
+}
+],
+name: "LiquidationCall",
+type: "event"
+},
+{
+anonymous: false,
+inputs: [
+{
+indexed: true,
+name: "_reserve",
+type: "address"
+},
+{
+indexed: true,
+name: "_user",
+type: "address"
+},
+{
+indexed: false,
+name: "timestamp",
+type: "uint256"
+}
+],
+name: "Swap",
+type: "event"
+},
+{
+anonymous: false,
+inputs: [
+{
+indexed: true,
+name: "_target",
+type: "address"
+},
+{
+indexed: true,
+name: "_reserve",
+type: "address"
+},
+{
+indexed: false,
+name: "_amount",
+type: "uint256"
+},
+{
+indexed: false,
+name: "_fee",
+type: "uint256"
+},
+{
+indexed: false,
+name: "timestamp",
+type: "uint256"
+}
+],
+name: "FlashLoan",
+type: "event"
+},
+{
+anonymous: false,
+inputs: [
+{
+indexed: true,
+name: "_reserve",
+type: "address"
+},
+{
+indexed: true,
+name: "_user",
+type: "address"
+}
+],
+name: "ReserveUsedAsCollateralEnabled",
+type: "event"
+},
+{
+anonymous: false,
+inputs: [
+{
+indexed: true,
+name: "_reserve",
+type: "address"
+},
+{
+indexed: true,
+name: "_user",
+type: "address"
+}
+],
+name: "ReserveUsedAsCollateralDisabled",
+type: "event"
+},
+{
+constant: false,
+inputs: [
+{
+name: "_reserve",
+type: "address"
+},
+{
+name: "_amount",
+type: "uint256"
+},
+{
+name: "_referralCode",
+type: "uint16"
+}
+],
+name: "deposit",
+outputs: [ ],
+payable: true,
+stateMutability: "payable",
+type: "function"
+},
+{
+constant: false,
+inputs: [
+{
+name: "_reserve",
+type: "address"
+},
+{
+name: "_user",
+type: "address"
+},
+{
+name: "_amount",
+type: "uint256"
+}
+],
+name: "redeemUnderlying",
+outputs: [ ],
+payable: false,
+stateMutability: "nonpayable",
+type: "function"
+},
+{
+constant: false,
+inputs: [
+{
+name: "_reserve",
+type: "address"
+},
+{
+name: "_amount",
+type: "uint256"
+},
+{
+name: "_interestRateMode",
+type: "uint256"
+},
+{
+name: "_referralCode",
+type: "uint16"
+}
+],
+name: "borrow",
+outputs: [ ],
+payable: false,
+stateMutability: "nonpayable",
+type: "function"
+},
+{
+constant: false,
+inputs: [
+{
+name: "_reserve",
+type: "address"
+},
+{
+name: "_amount",
+type: "uint256"
+},
+{
+name: "_onBehalfOf",
+type: "address"
+}
+],
+name: "repay",
+outputs: [ ],
+payable: true,
+stateMutability: "payable",
+type: "function"
+},
+{
+constant: false,
+inputs: [
+{
+name: "_reserve",
+type: "address"
+}
+],
+name: "swapBorrowRateMode",
+outputs: [ ],
+payable: false,
+stateMutability: "nonpayable",
+type: "function"
+},
+{
+constant: false,
+inputs: [
+{
+name: "_reserve",
+type: "address"
+},
+{
+name: "_user",
+type: "address"
+}
+],
+name: "rebalanceFixedBorrowRate",
+outputs: [ ],
+payable: false,
+stateMutability: "nonpayable",
+type: "function"
+},
+{
+constant: false,
+inputs: [
+{
+name: "_reserve",
+type: "address"
+},
+{
+name: "_useAsCollateral",
+type: "bool"
+}
+],
+name: "setUserUseReserveAsCollateral",
+outputs: [ ],
+payable: false,
+stateMutability: "nonpayable",
+type: "function"
+},
+{
+constant: false,
+inputs: [
+{
+name: "_collateral",
+type: "address"
+},
+{
+name: "_reserve",
+type: "address"
+},
+{
+name: "_user",
+type: "address"
+},
+{
+name: "_purchaseAmount",
+type: "uint256"
+},
+{
+name: "_receiveAToken",
+type: "bool"
+}
+],
+name: "liquidationCall",
+outputs: [ ],
+payable: true,
+stateMutability: "payable",
+type: "function"
+},
+{
+constant: false,
+inputs: [
+{
+name: "_receiver",
+type: "address"
+},
+{
+name: "_reserve",
+type: "address"
+},
+{
+name: "_amount",
+type: "uint256"
+}
+],
+name: "flashLoan",
+outputs: [ ],
+payable: false,
+stateMutability: "nonpayable",
+type: "function"
+},
+{
+constant: true,
+inputs: [
+{
+name: "_reserve",
+type: "address"
+}
+],
+name: "getReserveConfigurationData",
+outputs: [
+{
+name: "ltv",
+type: "uint256"
+},
+{
+name: "liquidationThreshold",
+type: "uint256"
+},
+{
+name: "liquidationDiscount",
+type: "uint256"
+},
+{
+name: "interestRateStrategyAddress",
+type: "address"
+},
+{
+name: "usageAsCollateralEnabled",
+type: "bool"
+},
+{
+name: "borrowingEnabled",
+type: "bool"
+},
+{
+name: "fixedBorrowRateEnabled",
+type: "bool"
+},
+{
+name: "isActive",
+type: "bool"
+}
+],
+payable: false,
+stateMutability: "view",
+type: "function"
+},
+{
+constant: true,
+inputs: [
+{
+name: "_reserve",
+type: "address"
+}
+],
+name: "getReserveData",
+outputs: [
+{
+name: "totalLiquidity",
+type: "uint256"
+},
+{
+name: "availableLiquidity",
+type: "uint256"
+},
+{
+name: "totalBorrowsFixed",
+type: "uint256"
+},
+{
+name: "totalBorrowsVariable",
+type: "uint256"
+},
+{
+name: "liquidityRate",
+type: "uint256"
+},
+{
+name: "variableBorrowRate",
+type: "uint256"
+},
+{
+name: "fixedBorrowRate",
+type: "uint256"
+},
+{
+name: "averageFixedBorrowRate",
+type: "uint256"
+},
+{
+name: "utilizationRate",
+type: "uint256"
+},
+{
+name: "liquidityIndex",
+type: "uint256"
+},
+{
+name: "variableBorrowIndex",
+type: "uint256"
+},
+{
+name: "aTokenAddress",
+type: "address"
+},
+{
+name: "lastUpdateTimestamp",
+type: "uint40"
+}
+],
+payable: false,
+stateMutability: "view",
+type: "function"
+},
+{
+constant: true,
+inputs: [
+{
+name: "_user",
+type: "address"
+}
+],
+name: "getUserAccountData",
+outputs: [
+{
+name: "totalLiquidityETH",
+type: "uint256"
+},
+{
+name: "totalCollateralETH",
+type: "uint256"
+},
+{
+name: "totalBorrowsETH",
+type: "uint256"
+},
+{
+name: "availableBorrowsETH",
+type: "uint256"
+},
+{
+name: "currentLiquidationThreshold",
+type: "uint256"
+},
+{
+name: "ltv",
+type: "uint256"
+},
+{
+name: "healthFactor",
+type: "uint256"
+}
+],
+payable: false,
+stateMutability: "view",
+type: "function"
+},
+{
+constant: true,
+inputs: [
+{
+name: "_reserve",
+type: "address"
+},
+{
+name: "_user",
+type: "address"
+}
+],
+name: "getUserReserveData",
+outputs: [
+{
+name: "currentATokenBalance",
+type: "uint256"
+},
+{
+name: "currentUnderlyingBalance",
+type: "uint256"
+},
+{
+name: "currentBorrowBalance",
+type: "uint256"
+},
+{
+name: "principalBorrowBalance",
+type: "uint256"
+},
+{
+name: "borrowRateMode",
+type: "uint256"
+},
+{
+name: "borrowRate",
+type: "uint256"
+},
+{
+name: "liquidityRate",
+type: "uint256"
+},
+{
+name: "originationFee",
+type: "uint256"
+},
+{
+name: "variableBorrowIndex",
+type: "uint256"
+},
+{
+name: "lastUpdateTimestamp",
+type: "uint256"
+},
+{
+name: "usageAsCollateralEnabled",
+type: "bool"
+}
+],
+payable: false,
+stateMutability: "view",
+type: "function"
+},
+{
+constant: true,
+inputs: [ ],
+name: "getReserves",
+outputs: [
+{
+name: "",
+type: "address[]"
+}
+],
+payable: false,
+stateMutability: "view",
+type: "function"
+}
+]
+                
+                coin_contract_dict = {
+    "Contracts": "Address",
+    "LendingPoolAddressesProvider": "0x9C6C63aA0cD4557d7aE6D9306C06C093A2e35408",
+    "LendingPool": "0xB36017F5aafDE1a9462959f0e53866433D373404",
+    "LendingPoolCore": "0xAf4Ef1a755F05DD9D68E9e53F111eb63b05fB1FD",
+    "ETH": "0x436264Ac032f7f271934Fa920dcD655210193090",
+    "DAI": "0x8Ac14CE57A87A07A2F13c1797EfEEE8C0F8F571A",
+    "USDC": "0x20AD264D06f0Cf265054589577c8c2297C26B6C4",
+    "SUSD": "0x5537e2b41E6a1e6f72e28B93c48D9EA11caa5A94",
+    "TUSD": "0x3BE8B64104de5b809AAd0eC4514C97A58878eE14",
+    "USDT": "0xD0F559C8ed680e5666Acb7CB068a6964ee05122c",
+    "AMPL": "0xdE460f92901185d24090BcF6cAc3B37308b2b98A",
+    "BAT": "0xEAe6283C6A1EB7E29CA9A4B3F049C894DA7216c1",
+    "KNC": "0x67F548FC6831222b8565eA69589fd7dc56d2C3Ba",
+    "LEND": "0x538e2C4Fc148f5483fDbb4f24A042B76111F3114",
+    "LINK": "0x7d2a39c2A3a74d7570f487E203230D3aC00cea80",
+    "MANA": "0xaAc40ceEf68B662643fB9ec641E11a40b7c90B0a",
+    "MKR": "0x0697A93267f6c656023F8a5b489435591b849698",
+    "REP": "0xA46d949aB1fc89c33C5CD8163482Eb84BE0A9a8c",
+    "WBTC": "0xf065FD0972a98D9F1c01AB3EE2D4efbbbb5bD1F7",
+    "ZRX": "0x3b9743C458ae58c30069D14e98A2745aD3982480"
+  }
+                var web3Contract = new web3.eth.Contract(abi, coin_contract_dict[document.getElementById("coincheck").value]);
+                alert("Matic Dagger triggered to this browser for a" + document.getElementById("coincheck").value + "\n" +  coin_contract_dict[document.getElementById("coincheck").value]);
+            }
+        
+        </script>
         
         <div id="lowest" class="card" hidden>
             Cheapest Borrow <span style="font-weight:bold;" id="bestratetoken"></span> Interest Rate % <br><span style="font-weight:bold;" id="bestrate"></span></div>
@@ -355,20 +1082,751 @@ console.log(atokenslist);
                 var max_borrow = lent_output * lowest_borrow_eth_price / highest_lend_price;
                 console.log(max_borrow);
                 console.log(lent_output);
+                
+                
+                abi = [
+{
+constant: true,
+inputs: [ ],
+name: "addressesProvider",
+outputs: [
+{
+name: "",
+type: "address"
+}
+],
+payable: false,
+stateMutability: "view",
+type: "function"
+},
+{
+inputs: [
+{
+name: "_addressesProvider",
+type: "address"
+}
+],
+payable: false,
+stateMutability: "nonpayable",
+type: "constructor"
+},
+{
+anonymous: false,
+inputs: [
+{
+indexed: true,
+name: "_reserve",
+type: "address"
+},
+{
+indexed: true,
+name: "_user",
+type: "address"
+},
+{
+indexed: false,
+name: "_amount",
+type: "uint256"
+},
+{
+indexed: true,
+name: "_referral",
+type: "uint16"
+},
+{
+indexed: false,
+name: "timestamp",
+type: "uint256"
+}
+],
+name: "Deposit",
+type: "event"
+},
+{
+anonymous: false,
+inputs: [
+{
+indexed: true,
+name: "_reserve",
+type: "address"
+},
+{
+indexed: true,
+name: "_user",
+type: "address"
+},
+{
+indexed: false,
+name: "_amount",
+type: "uint256"
+},
+{
+indexed: false,
+name: "timestamp",
+type: "uint256"
+}
+],
+name: "RedeemUnderlying",
+type: "event"
+},
+{
+anonymous: false,
+inputs: [
+{
+indexed: true,
+name: "_reserve",
+type: "address"
+},
+{
+indexed: true,
+name: "_user",
+type: "address"
+},
+{
+indexed: false,
+name: "_amount",
+type: "uint256"
+},
+{
+indexed: true,
+name: "_referral",
+type: "uint16"
+},
+{
+indexed: false,
+name: "timestamp",
+type: "uint256"
+}
+],
+name: "Borrow",
+type: "event"
+},
+{
+anonymous: false,
+inputs: [
+{
+indexed: true,
+name: "_reserve",
+type: "address"
+},
+{
+indexed: true,
+name: "_user",
+type: "address"
+},
+{
+indexed: false,
+name: "_amount",
+type: "uint256"
+},
+{
+indexed: false,
+name: "timestamp",
+type: "uint256"
+}
+],
+name: "Repay",
+type: "event"
+},
+{
+anonymous: false,
+inputs: [
+{
+indexed: true,
+name: "_collateral",
+type: "address"
+},
+{
+indexed: true,
+name: "_user",
+type: "address"
+},
+{
+indexed: false,
+name: "_amount",
+type: "uint256"
+},
+{
+indexed: true,
+name: "_reserve",
+type: "address"
+},
+{
+indexed: false,
+name: "timestamp",
+type: "uint256"
+}
+],
+name: "LiquidationCall",
+type: "event"
+},
+{
+anonymous: false,
+inputs: [
+{
+indexed: true,
+name: "_reserve",
+type: "address"
+},
+{
+indexed: true,
+name: "_user",
+type: "address"
+},
+{
+indexed: false,
+name: "timestamp",
+type: "uint256"
+}
+],
+name: "Swap",
+type: "event"
+},
+{
+anonymous: false,
+inputs: [
+{
+indexed: true,
+name: "_target",
+type: "address"
+},
+{
+indexed: true,
+name: "_reserve",
+type: "address"
+},
+{
+indexed: false,
+name: "_amount",
+type: "uint256"
+},
+{
+indexed: false,
+name: "_fee",
+type: "uint256"
+},
+{
+indexed: false,
+name: "timestamp",
+type: "uint256"
+}
+],
+name: "FlashLoan",
+type: "event"
+},
+{
+anonymous: false,
+inputs: [
+{
+indexed: true,
+name: "_reserve",
+type: "address"
+},
+{
+indexed: true,
+name: "_user",
+type: "address"
+}
+],
+name: "ReserveUsedAsCollateralEnabled",
+type: "event"
+},
+{
+anonymous: false,
+inputs: [
+{
+indexed: true,
+name: "_reserve",
+type: "address"
+},
+{
+indexed: true,
+name: "_user",
+type: "address"
+}
+],
+name: "ReserveUsedAsCollateralDisabled",
+type: "event"
+},
+{
+constant: false,
+inputs: [
+{
+name: "_reserve",
+type: "address"
+},
+{
+name: "_amount",
+type: "uint256"
+},
+{
+name: "_referralCode",
+type: "uint16"
+}
+],
+name: "deposit",
+outputs: [ ],
+payable: true,
+stateMutability: "payable",
+type: "function"
+},
+{
+constant: false,
+inputs: [
+{
+name: "_reserve",
+type: "address"
+},
+{
+name: "_user",
+type: "address"
+},
+{
+name: "_amount",
+type: "uint256"
+}
+],
+name: "redeemUnderlying",
+outputs: [ ],
+payable: false,
+stateMutability: "nonpayable",
+type: "function"
+},
+{
+constant: false,
+inputs: [
+{
+name: "_reserve",
+type: "address"
+},
+{
+name: "_amount",
+type: "uint256"
+},
+{
+name: "_interestRateMode",
+type: "uint256"
+},
+{
+name: "_referralCode",
+type: "uint16"
+}
+],
+name: "borrow",
+outputs: [ ],
+payable: false,
+stateMutability: "nonpayable",
+type: "function"
+},
+{
+constant: false,
+inputs: [
+{
+name: "_reserve",
+type: "address"
+},
+{
+name: "_amount",
+type: "uint256"
+},
+{
+name: "_onBehalfOf",
+type: "address"
+}
+],
+name: "repay",
+outputs: [ ],
+payable: true,
+stateMutability: "payable",
+type: "function"
+},
+{
+constant: false,
+inputs: [
+{
+name: "_reserve",
+type: "address"
+}
+],
+name: "swapBorrowRateMode",
+outputs: [ ],
+payable: false,
+stateMutability: "nonpayable",
+type: "function"
+},
+{
+constant: false,
+inputs: [
+{
+name: "_reserve",
+type: "address"
+},
+{
+name: "_user",
+type: "address"
+}
+],
+name: "rebalanceFixedBorrowRate",
+outputs: [ ],
+payable: false,
+stateMutability: "nonpayable",
+type: "function"
+},
+{
+constant: false,
+inputs: [
+{
+name: "_reserve",
+type: "address"
+},
+{
+name: "_useAsCollateral",
+type: "bool"
+}
+],
+name: "setUserUseReserveAsCollateral",
+outputs: [ ],
+payable: false,
+stateMutability: "nonpayable",
+type: "function"
+},
+{
+constant: false,
+inputs: [
+{
+name: "_collateral",
+type: "address"
+},
+{
+name: "_reserve",
+type: "address"
+},
+{
+name: "_user",
+type: "address"
+},
+{
+name: "_purchaseAmount",
+type: "uint256"
+},
+{
+name: "_receiveAToken",
+type: "bool"
+}
+],
+name: "liquidationCall",
+outputs: [ ],
+payable: true,
+stateMutability: "payable",
+type: "function"
+},
+{
+constant: false,
+inputs: [
+{
+name: "_receiver",
+type: "address"
+},
+{
+name: "_reserve",
+type: "address"
+},
+{
+name: "_amount",
+type: "uint256"
+}
+],
+name: "flashLoan",
+outputs: [ ],
+payable: false,
+stateMutability: "nonpayable",
+type: "function"
+},
+{
+constant: true,
+inputs: [
+{
+name: "_reserve",
+type: "address"
+}
+],
+name: "getReserveConfigurationData",
+outputs: [
+{
+name: "ltv",
+type: "uint256"
+},
+{
+name: "liquidationThreshold",
+type: "uint256"
+},
+{
+name: "liquidationDiscount",
+type: "uint256"
+},
+{
+name: "interestRateStrategyAddress",
+type: "address"
+},
+{
+name: "usageAsCollateralEnabled",
+type: "bool"
+},
+{
+name: "borrowingEnabled",
+type: "bool"
+},
+{
+name: "fixedBorrowRateEnabled",
+type: "bool"
+},
+{
+name: "isActive",
+type: "bool"
+}
+],
+payable: false,
+stateMutability: "view",
+type: "function"
+},
+{
+constant: true,
+inputs: [
+{
+name: "_reserve",
+type: "address"
+}
+],
+name: "getReserveData",
+outputs: [
+{
+name: "totalLiquidity",
+type: "uint256"
+},
+{
+name: "availableLiquidity",
+type: "uint256"
+},
+{
+name: "totalBorrowsFixed",
+type: "uint256"
+},
+{
+name: "totalBorrowsVariable",
+type: "uint256"
+},
+{
+name: "liquidityRate",
+type: "uint256"
+},
+{
+name: "variableBorrowRate",
+type: "uint256"
+},
+{
+name: "fixedBorrowRate",
+type: "uint256"
+},
+{
+name: "averageFixedBorrowRate",
+type: "uint256"
+},
+{
+name: "utilizationRate",
+type: "uint256"
+},
+{
+name: "liquidityIndex",
+type: "uint256"
+},
+{
+name: "variableBorrowIndex",
+type: "uint256"
+},
+{
+name: "aTokenAddress",
+type: "address"
+},
+{
+name: "lastUpdateTimestamp",
+type: "uint40"
+}
+],
+payable: false,
+stateMutability: "view",
+type: "function"
+},
+{
+constant: true,
+inputs: [
+{
+name: "_user",
+type: "address"
+}
+],
+name: "getUserAccountData",
+outputs: [
+{
+name: "totalLiquidityETH",
+type: "uint256"
+},
+{
+name: "totalCollateralETH",
+type: "uint256"
+},
+{
+name: "totalBorrowsETH",
+type: "uint256"
+},
+{
+name: "availableBorrowsETH",
+type: "uint256"
+},
+{
+name: "currentLiquidationThreshold",
+type: "uint256"
+},
+{
+name: "ltv",
+type: "uint256"
+},
+{
+name: "healthFactor",
+type: "uint256"
+}
+],
+payable: false,
+stateMutability: "view",
+type: "function"
+},
+{
+constant: true,
+inputs: [
+{
+name: "_reserve",
+type: "address"
+},
+{
+name: "_user",
+type: "address"
+}
+],
+name: "getUserReserveData",
+outputs: [
+{
+name: "currentATokenBalance",
+type: "uint256"
+},
+{
+name: "currentUnderlyingBalance",
+type: "uint256"
+},
+{
+name: "currentBorrowBalance",
+type: "uint256"
+},
+{
+name: "principalBorrowBalance",
+type: "uint256"
+},
+{
+name: "borrowRateMode",
+type: "uint256"
+},
+{
+name: "borrowRate",
+type: "uint256"
+},
+{
+name: "liquidityRate",
+type: "uint256"
+},
+{
+name: "originationFee",
+type: "uint256"
+},
+{
+name: "variableBorrowIndex",
+type: "uint256"
+},
+{
+name: "lastUpdateTimestamp",
+type: "uint256"
+},
+{
+name: "usageAsCollateralEnabled",
+type: "bool"
+}
+],
+payable: false,
+stateMutability: "view",
+type: "function"
+},
+{
+constant: true,
+inputs: [ ],
+name: "getReserves",
+outputs: [
+{
+name: "",
+type: "address[]"
+}
+],
+payable: false,
+stateMutability: "view",
+type: "function"
+}
+]
+                var web3Contract = new web3.eth.Contract(abi, "0xB36017F5aafDE1a9462959f0e53866433D373404")
+                var contract = dagger.contract(web3Contract);
+                var filter = contract.events.Transfer({
+  filter: { from: document.getElementById("addr").innerHTML },
+  room: "latest"
+});
+                filter.watch(function(data, removed) {
+  console.log("I aave'd");
+                    
+});
+                max_borrow.toFixed(8);
      document.getElementById("lend_output").innerHTML = max_borrow.toFixed(8);
                         document.getElementById("lend_output").removeAttribute('hidden');
                         
                         document.getElementById("deposit_output").innerHTML = lent_output;
                         document.getElementById("deposit_output").removeAttribute('hidden');
-            document.getElementById("swapresults").removeAttribute("hidden");
+             document.getElementById("swapresults").removeAttribute("hidden");
                 
             });
         }
         </script>
         
+      
         
     <span id="fantom1" hidden></span>
     <span id="fantom2" hidden></span>
+        
+        <hr>
+        
+        <div id="credits">
+            Made With &lt;3 for the DeFi Hackathon <br>
+            
+            Want to Reward me for helping you swap?
+            <br>
+        My $XRP Payment Pointer: <span id="mypaymentpointer">
+$coil.xrptipbot.com/FvPDB2L8RE-Kj16Cax04AQ</span>
+            <img src="xrpqr.png" style="width: 200px">
+            <br>
+            Click below to donate XRP proportional the live interest rate difference that you can earn with Suaave! <br><a target="_blank" id="tweet" href="https://twitter.com/intent/tweet?text=Tip%20@calchulus%201%20@xrptipbot">Or Tip me publicly on Twitter</a>
+            <br>
+            <label>Tip Me With XRPTipBot!</label><br>
+      
+            <script>
+            function checkresult() {
+               return document.getElementById("interestrateswap").innerHTML; 
+            } </script>
+            
+         <a id="tipbot" amount=checkresult() size="275" to="16f3c307-62fc-444f-8a8f-5e826b1d3801" network="coil" labelpt="Tipped! Thank you!" href="https://www.xrptipbot.com" target="_blank"></a>
+<script async src="https://www.xrptipbot.com/static/donate/tipper.js" charset="utf-8"></script>
+        </div>
         
     </body>
 </html>
