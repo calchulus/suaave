@@ -40,12 +40,12 @@
             var info_list = data["reservesData"];
 //                console.log(info_list);
 //                console.log("HH");
-            
+             
                 var max_yield;
                 var max_token;
                 for (i=0; i<info_list.length; i++) {
-                            if (document.getElementById("stablecoin_filter").checked) {
-              if (info_list[i]["currencyType"] == "Other") {
+                           if (document.getElementById("stablecoin_filter").checked) {
+              if (atokenslist[i]["currencyType"] == "Other") {
                   continue;
               }
               }
@@ -95,11 +95,6 @@ console.log(atokenslist);
     var cheapest_rate;
     
     for (i=0; i <atokenslist.length; i++) {
-            if (document.getElementById("stablecoin_filter").checked) {
-              if (atokenslist[i]["currencyType"] == "Other") {
-                  continue;
-              }
-              }  
          var z = atokenslist[i].symbol;
            var  fix =  (Number(atokenslist[i].fixedBorrowRate)*100).toFixed(4);
         var vari = (Number(atokenslist[i].variableBorrowRate)*100).toFixed(4);
@@ -262,17 +257,18 @@ console.log(atokenslist);
     var json_dict = {};
 
     for (i=0; i <atokenslist.length; i++) {
-          if (document.getElementById("stablecoin_filter").checked) {
-              if (atokenslist[i]["currencyType"] == "Other") {
-                  continue;
-              }
-              }
+//          if (document.getElementById("stablecoin_filter").checked) {
+//              if (atokenslist[i]["currencyType"] == "Other") {
+//                  continue;
+//              }
+//              }
          if (document.getElementById("relend_asset").innerHTML == atokenslist[i].symbol) {
             var multiplier =  atokenslist[i]["baseLTVasCollateral"];
              document.getElementById("fantom2").innerHTML = multiplier;
              
              var relockethprice = atokenslist[i]["priceInEth"];
              console.log(multiplier);
+             console.log("QQ");
              console.log(relockethprice);
              
              console.log("H");
@@ -287,10 +283,9 @@ console.log(atokenslist);
                 continue;
             }
         }
-        
+     
             };
-                
-      var  rel_price = ethprice/relockethprice;
+                  var  rel_price = ethprice/relockethprice;
         console.log(rel_price);
         console.log("D");
              document.getElementById("fantom1").innerHTML = rel_price;
@@ -347,12 +342,16 @@ console.log(atokenslist);
                    {
                      lowest_borrow_eth_price =  info_list[i]["priceInEth"];   
                    };
-                  borrowpower += info_list[i]["currentUnderlyingBalance"] * info_list[i]["priceInEth"] *info_list[i]["baseLTVasCollateral"] ;
+                    console.log(info_list[i]["currentUnderlyingBalance"],info_list[i]["priceInEth"],info_list[i]["baseLTVasCollateral"]  )
+                  borrowpower += info_list[i]["currentUnderlyingBalance"] * info_list[i]["priceInEth"] * info_list[i]["baseLTVasCollateral"] ;
+                    console.log("dog");
+                    console.log(i, borrowpower);
                     
                 }
                 console.log(borrowpower.toFixed(8));
                 console.log(highest_lend_LTV);
                 var lent_output = (borrowpower / (1 - highest_lend_LTV)).toFixed(8);
+                console.log("elmo", lent_output);
                 var max_borrow = lent_output * lowest_borrow_eth_price / highest_lend_price;
                 console.log(max_borrow);
                 console.log(lent_output);
