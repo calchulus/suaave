@@ -40,14 +40,15 @@
             var info_list = data["reservesData"];
 //                console.log(info_list);
 //                console.log("HH");
-                    if (document.getElementById("stablecoin_filter").checked) {
-              if (atokenslist[i]["currencyType"] == "Other") {
-                  continue;
-              }
-              }
+            
                 var max_yield;
                 var max_token;
                 for (i=0; i<info_list.length; i++) {
+                            if (document.getElementById("stablecoin_filter").checked) {
+              if (info_list[i]["currencyType"] == "Other") {
+                  continue;
+              }
+              }
 //                    if (info_list[i]["currentPrincipalDeposits"] != 0) {
                       var yield = (Number(info_list[i]["liquidityRate"]) * 100).toFixed(4);
 //                        console.log("A");
