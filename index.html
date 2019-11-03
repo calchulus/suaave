@@ -94,6 +94,11 @@ console.log(atokenslist);
     var cheapest_rate;
     
     for (i=0; i <atokenslist.length; i++) {
+            if (document.getElementById("stablecoin_filter").checked) {
+              if (atokenslist[i]["currencyType"] == "Other") {
+                  continue;
+              }
+              }  
          var z = atokenslist[i].symbol;
            var  fix =  (Number(atokenslist[i].fixedBorrowRate)*100).toFixed(4);
         var vari = (Number(atokenslist[i].variableBorrowRate)*100).toFixed(4);
