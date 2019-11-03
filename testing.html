@@ -1,0 +1,80 @@
+<html>
+
+    
+    <meta name="monetization" content="$coil.xrptipbot.com/FvPDB2L8RE-Kj16Cax04AQ">
+    
+    
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+
+<link href="./style.css" rel="stylesheet">
+
+
+<link href="https://fonts.googleapis.com/css?family=Quicksand&display=swap" rel="stylesheet">
+
+<script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js@1.0.0-beta.34/dist/web3.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    
+    
+    
+    <script>
+  if (document.monetization) {
+    document.monetization.addEventListener('monetizationstart', event => {
+      // User has an open payment stream
+
+      // Connect to backend to validate the session using the request id
+      const { paymentPointer, requestId } = event.detail
+      if (!isValidSession(paymentPointer, requestId)) {
+        console.error('Invalid requestId for monetization')
+        showAdvertising()
+      }
+    })
+
+    document.monetization.addEventListener('monetizationprogress', event => {
+      // A payment has been received
+
+      // Connect to backend to validate the payment
+      const {
+        paymentPointer,
+        requestId,
+        amount,
+        assetCode,
+        assetScale
+      } = event.detail
+      if (
+        isValidPayment(paymentPointer, requestId, amount, assetCode, assetScale)
+      ) {
+        // Hide ads for a period based on amount received
+        suspendAdvertising(amount, assetCode, assetScale)
+      }
+    })
+    // Wait 30 seconds and then show ads if advertising is no longer suspended
+    setTimeout(maybeShowAdvertising, 30000)
+  } else {
+    showAdvertising()
+  }
+</script>
+    
+<header>
+    <link src="style.css" rel="stylesheet">
+<!--    <link href="./style.css" rel="stylesheet">-->
+
+    
+    
+    
+
+    </header>
+    <body>
+    
+    
+    <div class="card"> YO</div>
+    
+    
+    
+    <button class="card">11</button>
+    
+  <input>
+    
+    </body>
+    
+    
+</html>
